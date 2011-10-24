@@ -55,6 +55,24 @@ namespace NHibernate.Persister.Entity
 		SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
 		/// <summary>
+		/// Get the where clause part of any multi-level joins (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		SqlString WhereMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on);
+
+		/// <summary>
+		/// Get the from clause part of any multi-level joins (optional operation)
+		/// </summary>
+		/// <param name="alias"></param>
+		/// <param name="innerJoin"></param>
+		/// <param name="includeSubclasses"></param>
+		/// <returns></returns>
+		SqlString FromMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on);
+
+		/// <summary>
 		/// Get the where clause filter, given a query alias and considering enabled session filters
 		/// </summary>
 		string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);

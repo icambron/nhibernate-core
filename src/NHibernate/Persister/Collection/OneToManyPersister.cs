@@ -361,6 +361,16 @@ namespace NHibernate.Persister.Collection
 			return ((IJoinable) ElementPersister).WhereJoinFragment(alias, innerJoin, includeSubclasses);
 		}
 
+		public override SqlString FromMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			return ((IJoinable)ElementPersister).FromMultiLevelFragment(alias, fkColumns, pkColumns, joinType, on);
+		}
+
+		public override SqlString WhereMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			return ((IJoinable)ElementPersister).WhereMultiLevelFragment(alias, fkColumns, pkColumns, joinType, on);
+		}
+
 		public override string TableName
 		{
 			get { return ((IJoinable) ElementPersister).TableName; }

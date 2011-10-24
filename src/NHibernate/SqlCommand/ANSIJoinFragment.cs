@@ -17,37 +17,26 @@ namespace NHibernate.SqlCommand
 		}
 
 		public override void AddJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
-		                             SqlString on)
+									 SqlString on)
 		{
-			string joinString;
-			switch (joinType)
-			{
-				case JoinType.InnerJoin:
-					joinString = " inner join ";
-					break;
-				case JoinType.LeftOuterJoin:
-					joinString = " left outer join ";
-					break;
-				case JoinType.RightOuterJoin:
-					joinString = " right outer join ";
-					break;
-				case JoinType.FullJoin:
-					joinString = " full outer join ";
-					break;
-				default:
-					throw new AssertionFailure("undefined join type");
-			}
+			string joinString = GetJoinTypeString(joinType);
 
 			buffer.Add(joinString + tableName + ' ' + alias + " on ");
 
-			for (int j = 0; j < fkColumns.Length; j++)
-			{
-				buffer.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);
-				if (j < fkColumns.Length - 1)
-				{
-					buffer.Add(" and ");
-				}
-			}
+			AddOnClause(alias, fkColumns, pkColumns);
+
+			AddCondition(buffer, on);
+		}
+
+		public override void AddMultiLevelJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
+									 SqlString on, Func<bool, JoinFragment> innerFragment)
+		{
+			string joinString = GetJoinTypeString(joinType);
+
+			SqlString innerPart = innerFragment(true).ToFromFragmentString;
+
+			buffer.Add(string.Format("{0} ({1} {2} {3}) on ", joinString, tableName, alias, innerPart));
+			AddOnClause(alias, fkColumns, pkColumns);
 
 			AddCondition(buffer, on);
 		}
@@ -93,6 +82,35 @@ namespace NHibernate.SqlCommand
 		public override void AddFromFragmentString(SqlString fromFragmentString)
 		{
 			buffer.Add(fromFragmentString);
+		}
+
+		private string GetJoinTypeString(JoinType joinType)
+		{
+			switch (joinType)
+			{
+				case JoinType.InnerJoin:
+					return " inner join ";
+				case JoinType.LeftOuterJoin:
+					return " left outer join ";
+				case JoinType.RightOuterJoin:
+					return " right outer join ";
+				case JoinType.FullJoin:
+					return " full outer join ";
+				default:
+					throw new AssertionFailure("undefined join type");
+			}
+		}
+
+		private void AddOnClause(string alias, string[] fkColumns, string[] pkColumns)
+		{
+			for (int j = 0; j < fkColumns.Length; j++)
+			{
+				buffer.Add(fkColumns[j] + "=" + alias + StringHelper.Dot + pkColumns[j]);
+				if (j < fkColumns.Length - 1)
+				{
+					buffer.Add(" and ");
+				}
+			}
 		}
 	}
 }

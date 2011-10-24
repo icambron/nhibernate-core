@@ -24,7 +24,7 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
-using Array=NHibernate.Mapping.Array;
+using Array = NHibernate.Mapping.Array;
 
 namespace NHibernate.Persister.Collection
 {
@@ -32,7 +32,7 @@ namespace NHibernate.Persister.Collection
 	/// Summary description for AbstractCollectionPersister.
 	/// </summary>
 	public abstract class AbstractCollectionPersister : ICollectionMetadata, ISqlLoadableCollection,
-	                                                    IPostInsertIdentityPersister
+														IPostInsertIdentityPersister
 	{
 		protected static readonly object NotFoundPlaceHolder = new object();
 		private readonly string role;
@@ -163,18 +163,18 @@ namespace NHibernate.Persister.Collection
 		private readonly IDictionary<string, object> collectionPropertyColumnAliases = new Dictionary<string, object>();
 		private readonly IDictionary<string, object> collectionPropertyColumnNames = new Dictionary<string, object>();
 
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof (ICollectionPersister));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ICollectionPersister));
 
 		public AbstractCollectionPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg,
-		                                   ISessionFactoryImplementor factory)
+										   ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			this.cache = cache;
 			if (factory.Settings.IsStructuredCacheEntriesEnabled)
 			{
 				cacheEntryStructure = collection.IsMap
-				                      	? (ICacheEntryStructure) new StructuredMapCacheEntry()
-				                      	: (ICacheEntryStructure) new StructuredCollectionCacheEntry();
+										? (ICacheEntryStructure)new StructuredMapCacheEntry()
+										: (ICacheEntryStructure)new StructuredCollectionCacheEntry();
 			}
 			else
 			{
@@ -211,14 +211,14 @@ namespace NHibernate.Persister.Collection
 			sqlOrderByString = collection.OrderBy;
 			hasOrder = sqlOrderByString != null;
 			sqlOrderByStringTemplate = hasOrder
-			                           	? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect,
-			                           	                                       factory.SQLFunctionRegistry)
-			                           	: null;
+										? Template.RenderOrderByStringTemplate(sqlOrderByString, dialect,
+																			   factory.SQLFunctionRegistry)
+										: null;
 			sqlWhereString = !string.IsNullOrEmpty(collection.Where) ? '(' + collection.Where + ')' : null;
 			hasWhere = sqlWhereString != null;
 			sqlWhereStringTemplate = hasWhere
-			                         	? Template.RenderWhereStringTemplate(sqlWhereString, dialect, factory.SQLFunctionRegistry)
-			                         	: null;
+										? Template.RenderWhereStringTemplate(sqlWhereString, dialect, factory.SQLFunctionRegistry)
+										: null;
 			hasOrphanDelete = collection.HasOrphanDelete;
 			int batch = collection.BatchSize;
 			if (batch == -1)
@@ -254,7 +254,7 @@ namespace NHibernate.Persister.Collection
 			string elemNode = collection.ElementNodeName;
 			if (elementType.IsEntityType)
 			{
-				string _entityName = ((EntityType) elementType).GetAssociatedEntityName();
+				string _entityName = ((EntityType)elementType).GetAssociatedEntityName();
 				elementPersister = factory.GetEntityPersister(_entityName);
 				if (elemNode == null)
 				{
@@ -283,13 +283,13 @@ namespace NHibernate.Persister.Collection
 				elementColumnAliases[j] = selectable.GetAlias(dialect);
 				if (selectable.IsFormula)
 				{
-					Formula form = (Formula) selectable;
+					Formula form = (Formula)selectable;
 					elementFormulaTemplates[j] = form.GetTemplate(dialect, factory.SQLFunctionRegistry);
 					elementFormulas[j] = form.FormulaString;
 				}
 				else
 				{
-					Column col = (Column) selectable;
+					Column col = (Column)selectable;
 					elementColumnNames[j] = col.GetQuotedName(dialect);
 					elementColumnIsSettable[j] = true;
 					elementColumnIsInPrimaryKey[j] = !col.IsNullable;
@@ -320,7 +320,7 @@ namespace NHibernate.Persister.Collection
 			if (hasIndex)
 			{
 				// NativeSQL: collect index column and auto-aliases
-				IndexedCollection indexedCollection = (IndexedCollection) collection;
+				IndexedCollection indexedCollection = (IndexedCollection)collection;
 				indexType = indexedCollection.Index.Type;
 				int indexSpan = indexedCollection.Index.ColumnSpan;
 				indexColumnNames = new string[indexSpan];
@@ -335,21 +335,21 @@ namespace NHibernate.Persister.Collection
 					indexColumnAliases[i] = selectable.GetAlias(dialect);
 					if (selectable.IsFormula)
 					{
-						Formula indexForm = (Formula) selectable;
+						Formula indexForm = (Formula)selectable;
 						indexFormulaTemplates[i] = indexForm.GetTemplate(dialect, factory.SQLFunctionRegistry);
 						indexFormulas[i] = indexForm.FormulaString;
 						hasFormula = true;
 					}
 					else
 					{
-						Column indexCol = (Column) selectable;
+						Column indexCol = (Column)selectable;
 						indexColumnNames[i] = indexCol.GetQuotedName(dialect);
 						indexColumnIsSettable[i] = true;
 					}
 					i++;
 				}
 				indexContainsFormula = hasFormula;
-				baseIndex = indexedCollection.IsList ? ((List) indexedCollection).BaseIndex : 0;
+				baseIndex = indexedCollection.IsList ? ((List)indexedCollection).BaseIndex : 0;
 
 				indexNodeName = indexedCollection.IndexNodeName;
 				CheckColumnDuplication(distinctColumns, indexedCollection.Index.ColumnIterator);
@@ -374,7 +374,7 @@ namespace NHibernate.Persister.Collection
 				{
 					throw new MappingException("one-to-many collections with identifiers are not supported.");
 				}
-				IdentifierCollection idColl = (IdentifierCollection) collection;
+				IdentifierCollection idColl = (IdentifierCollection)collection;
 				identifierType = idColl.Identifier.Type;
 
 				Column col = null;
@@ -388,7 +388,7 @@ namespace NHibernate.Persister.Collection
 				identifierColumnAlias = col.GetAlias(dialect);
 				identifierGenerator =
 					idColl.Identifier.CreateIdentifierGenerator(factory.Dialect, factory.Settings.DefaultCatalogName,
-					                                            factory.Settings.DefaultSchemaName, null);
+																factory.Settings.DefaultSchemaName, null);
 				// NH see : identityDelegate declaration
 				IPostInsertIdentifierGenerator pig = (identifierGenerator as IPostInsertIdentifierGenerator);
 				if (pig != null)
@@ -435,7 +435,7 @@ namespace NHibernate.Persister.Collection
 				sqlInsertRowString = new SqlCommandInfo(collection.CustomSQLInsert, parmsTypes);
 				insertCallable = collection.IsCustomInsertCallable;
 				insertCheckStyle = collection.CustomSQLInsertCheckStyle
-				                   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLInsert, insertCallable);
+								   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLInsert, insertCallable);
 			}
 
 			sqlUpdateRowString = GenerateUpdateRowString();
@@ -449,7 +449,7 @@ namespace NHibernate.Persister.Collection
 				sqlUpdateRowString = new SqlCommandInfo(collection.CustomSQLUpdate, sqlUpdateRowString.ParameterTypes);
 				updateCallable = collection.IsCustomUpdateCallable;
 				updateCheckStyle = collection.CustomSQLUpdateCheckStyle
-				                   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLUpdate, updateCallable);
+								   ?? ExecuteUpdateResultCheckStyle.DetermineDefault(collection.CustomSQLUpdate, updateCallable);
 			}
 
 			sqlDeleteRowString = GenerateDeleteRowString();
@@ -478,7 +478,7 @@ namespace NHibernate.Persister.Collection
 				deleteAllCheckStyle = ExecuteUpdateResultCheckStyle.None;
 			}
 
-		    isCollectionIntegerIndex = collection.IsIndexed && !collection.IsMap;
+			isCollectionIntegerIndex = collection.IsIndexed && !collection.IsMap;
 			sqlDetectRowByIndexString = GenerateDetectRowByIndexString();
 			sqlDetectRowByElementString = GenerateDetectRowByElementString();
 			sqlSelectRowByIndexString = GenerateSelectRowByIndexString();
@@ -493,7 +493,7 @@ namespace NHibernate.Persister.Collection
 
 			if (collection.IsArray)
 			{
-				elementClass = ((Array) collection).ElementClass;
+				elementClass = ((Array)collection).ElementClass;
 			}
 			else
 			{
@@ -505,7 +505,7 @@ namespace NHibernate.Persister.Collection
 			{
 				elementPropertyMapping =
 					new CompositeElementPropertyMapping(elementColumnNames, elementFormulaTemplates,
-					                                    (IAbstractComponentType) elementType, factory);
+														(IAbstractComponentType)elementType, factory);
 			}
 			else if (!elementType.IsEntityType)
 			{
@@ -526,25 +526,25 @@ namespace NHibernate.Persister.Collection
 			// Handle any filters applied to this collection for many-to-many
 			manyToManyFilterHelper = new FilterHelper(collection.ManyToManyFilterMap, dialect, factory.SQLFunctionRegistry);
 			manyToManyWhereString = !string.IsNullOrEmpty(collection.ManyToManyWhere)
-			                        	? "( " + collection.ManyToManyWhere + " )"
-			                        	: null;
+										? "( " + collection.ManyToManyWhere + " )"
+										: null;
 			manyToManyWhereTemplate = manyToManyWhereString == null
-			                          	? null
-			                          	: Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect,
-			                          	                                     factory.SQLFunctionRegistry);
+										? null
+										: Template.RenderWhereStringTemplate(manyToManyWhereString, factory.Dialect,
+																			 factory.SQLFunctionRegistry);
 			manyToManyOrderByString = collection.ManyToManyOrdering;
 			manyToManyOrderByTemplate = manyToManyOrderByString == null
-			                            	? null
-			                            	: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect,
-			                            	                                       factory.SQLFunctionRegistry);
+											? null
+											: Template.RenderOrderByStringTemplate(manyToManyOrderByString, factory.Dialect,
+																				   factory.SQLFunctionRegistry);
 			InitCollectionPropertyMap();
 		}
 
 		public void PostInstantiate()
 		{
 			initializer = queryLoaderName == null
-			              	? CreateCollectionInitializer(new CollectionHelper.EmptyMapClass<string, IFilter>())
-			              	: new NamedQueryCollectionInitializer(queryLoaderName, this);
+							? CreateCollectionInitializer(new CollectionHelper.EmptyMapClass<string, IFilter>())
+							: new NamedQueryCollectionInitializer(queryLoaderName, this);
 		}
 
 		protected void LogStaticSQL()
@@ -639,7 +639,7 @@ namespace NHibernate.Persister.Collection
 		}
 
 		protected abstract ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect,
-		                                                                     ISessionImplementor session);
+																			 ISessionImplementor session);
 
 		protected abstract ICollectionInitializer CreateCollectionInitializer(IDictionary<string, IFilter> enabledFilters);
 
@@ -710,7 +710,7 @@ namespace NHibernate.Persister.Collection
 		{
 			if (baseIndex != 0)
 			{
-				index = (int) index - baseIndex;
+				index = (int)index - baseIndex;
 			}
 
 			return index;
@@ -759,7 +759,7 @@ namespace NHibernate.Persister.Collection
 		{
 			if (baseIndex != 0)
 			{
-				index = (int) index + baseIndex;
+				index = (int)index + baseIndex;
 			}
 
 			return index;
@@ -840,7 +840,7 @@ namespace NHibernate.Persister.Collection
 		{
 			if (!hasWhere)
 				return sql;
-		    return sql.Append(" and ").Append(sqlWhereString);
+			return sql.Append(" and ").Append(sqlWhereString);
 		}
 
 		private SqlString GenerateSelectSizeString(ISessionImplementor sessionImplementor)
@@ -848,18 +848,18 @@ namespace NHibernate.Persister.Collection
 			string selectValue = GetCountSqlSelectClause();
 
 			return new SqlSimpleSelectBuilder(dialect, factory)
-		        .SetTableName(TableName)
-		        .AddWhereFragment(KeyColumnNames, KeyType, "=")
-		        .AddColumn(selectValue)
-		        .ToSqlString()
-		        .Append(FilterFragment(TableName, sessionImplementor.EnabledFilters));
+				.SetTableName(TableName)
+				.AddWhereFragment(KeyColumnNames, KeyType, "=")
+				.AddColumn(selectValue)
+				.ToSqlString()
+				.Append(FilterFragment(TableName, sessionImplementor.EnabledFilters));
 		}
 
 		protected virtual string GetCountSqlSelectClause()
 		{
 			// NH: too many "if" when each collection can have its persister
 			return isCollectionIntegerIndex
-			       	? (string.Format("max({0}) + 1", IndexColumnNames[0]))
+					? (string.Format("max({0}) + 1", IndexColumnNames[0]))
 							: (HasIndex ? string.Format("count({0})", GetIndexCountExpression()) : string.Format("count({0})", ElementColumnNames[0]));
 		}
 
@@ -877,7 +877,7 @@ namespace NHibernate.Persister.Collection
 			}
 
 			// TODO NH: may be we need something else when Index is mixed with Formula
-			var sqlString=
+			var sqlString =
 				new SqlSimpleSelectBuilder(dialect, factory)
 					.SetTableName(TableName)
 					.AddWhereFragment(KeyColumnNames, KeyType, "=")
@@ -894,7 +894,7 @@ namespace NHibernate.Persister.Collection
 				return null;
 			}
 
-			var sqlString=new SqlSimpleSelectBuilder(dialect, factory)
+			var sqlString = new SqlSimpleSelectBuilder(dialect, factory)
 				.SetTableName(TableName)
 				.AddWhereFragment(KeyColumnNames, KeyType, "=")
 				.AddWhereFragment(IndexColumnNames, IndexType, "=")
@@ -906,7 +906,7 @@ namespace NHibernate.Persister.Collection
 
 		private SqlString GenerateDetectRowByElementString()
 		{
-			var sqlString=
+			var sqlString =
 				new SqlSimpleSelectBuilder(dialect, factory)
 				.SetTableName(TableName)
 				.AddWhereFragment(KeyColumnNames, KeyType, "=")
@@ -1027,10 +1027,10 @@ namespace NHibernate.Persister.Collection
 					//bool callable = DeleteAllCallable;
 					bool useBatch = expectation.CanBeBatched;
 					IDbCommand st = useBatch
-					                	? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
-					                	                                      SqlDeleteString.ParameterTypes)
-					                	: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
-					                	                                 SqlDeleteString.ParameterTypes);
+										? session.Batcher.PrepareBatchCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
+																			  SqlDeleteString.ParameterTypes)
+										: session.Batcher.PrepareCommand(SqlDeleteString.CommandType, SqlDeleteString.Text,
+																		 SqlDeleteString.ParameterTypes);
 
 					try
 					{
@@ -1069,7 +1069,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-					                                 "could not delete collection: " + MessageHelper.InfoString(this, id));
+													 "could not delete collection: " + MessageHelper.InfoString(this, id));
 				}
 			}
 		}
@@ -1134,7 +1134,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-					                                 "could not insert collection: " + MessageHelper.InfoString(this, id));
+													 "could not insert collection: " + MessageHelper.InfoString(this, id));
 				}
 			}
 		}
@@ -1171,13 +1171,13 @@ namespace NHibernate.Persister.Collection
 							{
 								st =
 									session.Batcher.PrepareBatchCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-									                                    SqlDeleteRowString.ParameterTypes);
+																		SqlDeleteRowString.ParameterTypes);
 							}
 							else
 							{
 								st =
 									session.Batcher.PrepareCommand(SqlDeleteRowString.CommandType, SqlDeleteRowString.Text,
-									                               SqlDeleteRowString.ParameterTypes);
+																   SqlDeleteRowString.ParameterTypes);
 							}
 							try
 							{
@@ -1243,7 +1243,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-					                                 "could not delete collection rows: " + MessageHelper.InfoString(this, id));
+													 "could not delete collection rows: " + MessageHelper.InfoString(this, id));
 				}
 			}
 		}
@@ -1296,7 +1296,7 @@ namespace NHibernate.Persister.Collection
 				catch (DbException sqle)
 				{
 					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle,
-					                                 "could not insert collection rows: " + MessageHelper.InfoString(this, id));
+													 "could not insert collection rows: " + MessageHelper.InfoString(this, id));
 				}
 			}
 		}
@@ -1437,7 +1437,7 @@ namespace NHibernate.Persister.Collection
 			{
 				return null;
 			}
-			var rawAliases = (string[]) aliases;
+			var rawAliases = (string[])aliases;
 
 			var result = new string[rawAliases.Length];
 			for (int i = 0; i < rawAliases.Length; i++)
@@ -1459,8 +1459,8 @@ namespace NHibernate.Persister.Collection
 
 			if (hasIdentifier)
 			{
-				InitCollectionPropertyMap("id", identifierType, new string[] {identifierColumnAlias},
-				                          new string[] {identifierColumnName});
+				InitCollectionPropertyMap("id", identifierType, new string[] { identifierColumnAlias },
+										  new string[] { identifierColumnName });
 			}
 		}
 
@@ -1477,7 +1477,7 @@ namespace NHibernate.Persister.Collection
 				// because it works for <load-collection> and <return-join>.
 				int columnIndex = 0;
 
-				var ct = (IAbstractComponentType) type;
+				var ct = (IAbstractComponentType)type;
 				string[] propertyNames = ct.PropertyNames;
 				for (int propertyIndex = 0; propertyIndex < propertyNames.Length; propertyIndex++)
 				{
@@ -1506,7 +1506,7 @@ namespace NHibernate.Persister.Collection
 			}
 			else
 			{
-				var componentType = (IAbstractComponentType) propertyType;
+				var componentType = (IAbstractComponentType)propertyType;
 				foreach (var subtype in componentType.Subtypes)
 				{
 					CalcPropertyColumnSpan(subtype, ref count);
@@ -1516,33 +1516,33 @@ namespace NHibernate.Persister.Collection
 
 		public int GetSize(object key, ISessionImplementor session)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
-			try
-			{
-                if(session.EnabledFilters.Count > 0)
-                {
-                    
-                }
-
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
-				IDataReader rs = null;
+			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					KeyType.NullSafeSet(st, key, 0, session);
-					rs = session.Batcher.ExecuteReader(st);
-					return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
+					if (session.EnabledFilters.Count > 0)
+					{
+
+					}
+
+					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, GenerateSelectSizeString(session), KeyType.SqlTypes(factory));
+					IDataReader rs = null;
+					try
+					{
+						KeyType.NullSafeSet(st, key, 0, session);
+						rs = session.Batcher.ExecuteReader(st);
+						return rs.Read() ? Convert.ToInt32(rs.GetValue(0)) - baseIndex : 0;
+					}
+					finally
+					{
+						session.Batcher.CloseCommand(st, rs);
+					}
 				}
-				finally
+				catch (DbException sqle)
 				{
-					session.Batcher.CloseCommand(st, rs);
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+													 "could not retrieve collection size: "
+													 + MessageHelper.InfoString(this, key, Factory), GenerateSelectSizeString(session));
 				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve collection size: "
-				                                 + MessageHelper.InfoString(this, key, Factory), GenerateSelectSizeString(session));
-			}
 		}
 
 		public bool IndexExists(object key, object index, ISessionImplementor session)
@@ -1556,87 +1556,87 @@ namespace NHibernate.Persister.Collection
 		}
 
 		private bool Exists(object key, object indexOrElement, IType indexOrElementType, SqlString sql,
-		                    ISessionImplementor session)
+							ISessionImplementor session)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
-			try
-			{
-				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
-				sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
-				IDataReader rs = null;
+			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					KeyType.NullSafeSet(st, key, 0, session);
-					indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
+					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
+					sqlTl.AddRange(indexOrElementType.SqlTypes(factory));
+					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sql, sqlTl.ToArray());
+					IDataReader rs = null;
 					try
 					{
-						return rs.Read();
+						KeyType.NullSafeSet(st, key, 0, session);
+						indexOrElementType.NullSafeSet(st, indexOrElement, keyColumnNames.Length, session);
+						rs = session.Batcher.ExecuteReader(st);
+						try
+						{
+							return rs.Read();
+						}
+						finally
+						{
+							rs.Close();
+						}
+					}
+					catch (TransientObjectException)
+					{
+						return false;
 					}
 					finally
 					{
-						rs.Close();
+						session.Batcher.CloseCommand(st, rs);
 					}
 				}
-				catch (TransientObjectException)
+				catch (DbException sqle)
 				{
-					return false;
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+													 "could not check row existence: " + MessageHelper.InfoString(this, key, Factory),
+													 GenerateSelectSizeString(session));
 				}
-				finally
-				{
-					session.Batcher.CloseCommand(st, rs);
-				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not check row existence: " + MessageHelper.InfoString(this, key, Factory),
-				                                 GenerateSelectSizeString(session));
-			}
 		}
 
 		public virtual object GetElementByIndex(object key, object index, ISessionImplementor session, object owner)
 		{
-			using(new SessionIdLoggingContext(session.SessionId))
-			try
-			{
-				List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
-				sqlTl.AddRange(IndexType.SqlTypes(factory));
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
-				IDataReader rs = null;
+			using (new SessionIdLoggingContext(session.SessionId))
 				try
 				{
-					KeyType.NullSafeSet(st, key, 0, session);
-					IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
-					rs = session.Batcher.ExecuteReader(st);
+					List<SqlType> sqlTl = new List<SqlType>(KeyType.SqlTypes(factory));
+					sqlTl.AddRange(IndexType.SqlTypes(factory));
+					IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, sqlSelectRowByIndexString, sqlTl.ToArray());
+					IDataReader rs = null;
 					try
 					{
-						if (rs.Read())
+						KeyType.NullSafeSet(st, key, 0, session);
+						IndexType.NullSafeSet(st, IncrementIndexByBase(index), keyColumnNames.Length, session);
+						rs = session.Batcher.ExecuteReader(st);
+						try
 						{
-							return ElementType.NullSafeGet(rs, elementColumnAliases, session, owner);
+							if (rs.Read())
+							{
+								return ElementType.NullSafeGet(rs, elementColumnAliases, session, owner);
+							}
+							else
+							{
+								return NotFoundObject;
+							}
 						}
-						else
+						finally
 						{
-							return NotFoundObject;
+							rs.Close();
 						}
 					}
 					finally
 					{
-						rs.Close();
+						session.Batcher.CloseCommand(st, rs);
 					}
 				}
-				finally
+				catch (DbException sqle)
 				{
-					session.Batcher.CloseCommand(st, rs);
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
+													 "could not read row: " + MessageHelper.InfoString(this, key, Factory),
+													 GenerateSelectSizeString(session));
 				}
-			}
-			catch (DbException sqle)
-			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not read row: " + MessageHelper.InfoString(this, key, Factory),
-				                                 GenerateSelectSizeString(session));
-			}
 		}
 
 		public object NotFoundObject
@@ -1650,8 +1650,12 @@ namespace NHibernate.Persister.Collection
 
 		public abstract SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses);
 
+		public abstract SqlString FromMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on);
+
+		public abstract SqlString WhereMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on);
+
 		public abstract string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string currentEntitySuffix,
-		                                      string currentCollectionSuffix, bool includeCollectionColumns);
+											  string currentCollectionSuffix, bool includeCollectionColumns);
 
 		public abstract bool ConsumesCollectionAlias();
 
@@ -1963,15 +1967,15 @@ namespace NHibernate.Persister.Collection
 		public abstract bool IsOneToMany { get; }
 
 		protected object PerformInsert(object ownerId, IPersistentCollection collection, IExpectation expectation,
-		                               object entry, int index, bool useBatch, bool callable, ISessionImplementor session)
+									   object entry, int index, bool useBatch, bool callable, ISessionImplementor session)
 		{
 			object entryId = null;
 			int offset = 0;
 			IDbCommand st = useBatch
-			                	? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
-			                	                                      SqlInsertRowString.ParameterTypes)
-			                	: session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
-			                	                                 SqlInsertRowString.ParameterTypes);
+								? session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
+																	  SqlInsertRowString.ParameterTypes)
+								: session.Batcher.PrepareCommand(SqlInsertRowString.CommandType, SqlInsertRowString.Text,
+																 SqlInsertRowString.ParameterTypes);
 			try
 			{
 				//offset += expectation.Prepare(st, factory.ConnectionProvider.Driver);
@@ -2033,9 +2037,9 @@ namespace NHibernate.Persister.Collection
 		#region IPostInsertIdentityPersister Members
 
 		private string identitySelectString;
-	    private bool isCollectionIntegerIndex;
+		private bool isCollectionIntegerIndex;
 
-	    public string IdentitySelectString
+		public string IdentitySelectString
 		{
 			get
 			{
@@ -2043,7 +2047,7 @@ namespace NHibernate.Persister.Collection
 				{
 					identitySelectString =
 						Factory.Dialect.GetIdentitySelectString(IdentifierColumnName, qualifiedTableName,
-						                                        IdentifierType.SqlTypes(Factory)[0].DbType);
+																IdentifierType.SqlTypes(Factory)[0].DbType);
 				}
 				return identitySelectString;
 			}
@@ -2051,7 +2055,7 @@ namespace NHibernate.Persister.Collection
 
 		public string[] RootTableKeyColumnNames
 		{
-			get { return new string[] {IdentifierColumnName}; }
+			get { return new string[] { IdentifierColumnName }; }
 		}
 
 		public SqlString GetSelectByUniqueKeyString(string propertyName)
@@ -2075,7 +2079,7 @@ namespace NHibernate.Persister.Collection
 		/// This form is used for PostInsertIdentifierGenerator-style ids (IDENTITY, select, etc).
 		/// </remarks>
 		protected object PerformInsert(object ownerId, IPersistentCollection collection, object entry, int index,
-		                               ISessionImplementor session)
+									   ISessionImplementor session)
 		{
 			IBinder binder = new GeneratedIdentifierBinder(ownerId, collection, entry, index, session, this);
 			return identityDelegate.PerformInsert(SqlInsertRowString, session, binder);
@@ -2091,7 +2095,7 @@ namespace NHibernate.Persister.Collection
 			private readonly AbstractCollectionPersister persister;
 
 			public GeneratedIdentifierBinder(object ownerId, IPersistentCollection collection, object entry, int index,
-			                                 ISessionImplementor session, AbstractCollectionPersister persister)
+											 ISessionImplementor session, AbstractCollectionPersister persister)
 			{
 				this.ownerId = ownerId;
 				this.collection = collection;

@@ -296,6 +296,16 @@ namespace NHibernate.Persister.Collection
 			return SqlString.Empty;
 		}
 
+		public override SqlString FromMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			return SqlString.Empty;
+		}
+
+		public override SqlString WhereMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			return SqlString.Empty;
+		}
+
 		protected override ICollectionInitializer CreateSubselectInitializer(SubselectFetch subselect, ISessionImplementor session)
 		{
 			return

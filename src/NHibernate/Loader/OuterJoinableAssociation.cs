@@ -125,9 +125,9 @@ namespace NHibernate.Loader
 
 		public void AddJoins(JoinFragment outerjoin)
 		{
-			outerjoin.AddJoin(joinable.TableName, rhsAlias, lhsColumns, rhsColumns, joinType, on);
-			outerjoin.AddJoins(joinable.FromJoinFragment(rhsAlias, false, true),
-			                   joinable.WhereJoinFragment(rhsAlias, false, true));
+			outerjoin.AddJoins(
+				joinable.FromMultiLevelFragment(rhsAlias, lhsColumns, rhsColumns, joinType, on),
+				joinable.WhereMultiLevelFragment(rhsAlias, lhsColumns, rhsColumns, joinType, on));
 		}
 
 		public void ValidateJoin(string path)

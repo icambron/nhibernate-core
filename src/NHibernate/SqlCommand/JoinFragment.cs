@@ -1,3 +1,4 @@
+using System;
 using NHibernate.Util;
 
 namespace NHibernate.SqlCommand
@@ -25,6 +26,13 @@ namespace NHibernate.SqlCommand
 		public abstract void AddCrossJoin(string tableName, string alias);
 
 		public abstract void AddJoins(SqlString fromFragment, SqlString whereFragment);
+
+		public virtual void AddMultiLevelJoin(string tableName, string alias, string[] fkColumns, string[] pkColumns, JoinType joinType,
+							 SqlString on, Func<bool, JoinFragment> innerFragment)
+		{
+			AddJoin(tableName, alias, fkColumns, pkColumns, joinType, on);
+			AddFragment(innerFragment(false));
+		}
 
 		public abstract SqlString ToFromFragmentString { get; }
 

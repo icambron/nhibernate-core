@@ -3209,6 +3209,16 @@ namespace NHibernate.Persister.Entity
 			return string.Empty;
 		}
 
+		public virtual SqlString FromMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			return CreateMultiLevelJoin(alias, fkColumns, pkColumns, joinType, on).ToFromFragmentString;
+		}
+
+		public virtual SqlString WhereMultiLevelFragment(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			return CreateMultiLevelJoin(alias, fkColumns, pkColumns, joinType, on).ToWhereFragmentString;
+		}
+
 		public virtual SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return SubclassTableSpan == 1
@@ -3225,6 +3235,25 @@ namespace NHibernate.Persister.Entity
 		protected internal virtual bool IsSubclassTableLazy(int j)
 		{
 			return false;
+		}
+
+		private JoinFragment CreateMultiLevelJoin(string alias, string[] fkColumns, string[] pkColumns, JoinType joinType, SqlString on)
+		{
+			JoinFragment join = Factory.Dialect.CreateOuterJoinFragment();
+			int tableSpan = SubclassTableSpan;
+			if (tableSpan > 1)
+			{
+				Func<bool, JoinFragment> addMinorJoins = canInnerJoin => CreateJoin(alias, canInnerJoin, true);
+				join.AddMultiLevelJoin(TableName, alias, fkColumns, pkColumns, joinType, on, addMinorJoins);
+			}
+			else
+			{
+				join.AddJoin(TableName, alias, fkColumns, pkColumns, joinType, on);
+				join.AddJoins(
+					FromJoinFragment(alias, false, true),
+					WhereJoinFragment(alias, false, true));
+			}
+			return join;
 		}
 
 		private JoinFragment CreateJoin(string name, bool innerjoin, bool includeSubclasses)
